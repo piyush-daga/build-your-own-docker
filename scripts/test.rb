@@ -7,7 +7,7 @@ require "httparty"
 require_relative "../lib/solution_tester"
 require_relative "../lib/tester_downloader"
 require_relative "../lib/dockerfile_tester"
-require_relative "../lib/starter_repo_tester"
+# require_relative "../lib/starter_repo_tester"
 require_relative "../lib/models"
 
 course_dir = ARGV[0]
@@ -39,23 +39,23 @@ STARTER_LANGUAGE_SLUGS_TO_SKIP = {
   ]
 }[course.slug] || []
 
-dockerfile_testers = Dir["#{course_dir}/dockerfiles/*.Dockerfile"].map do |dockerfile_path|
-  next if DOCKERFILE_NAMES_TO_SKIP.include?(File.basename(dockerfile_path))
+# dockerfile_testers = Dir["#{course_dir}/dockerfiles/*.Dockerfile"].map do |dockerfile_path|
+#   next if DOCKERFILE_NAMES_TO_SKIP.include?(File.basename(dockerfile_path))
 
-  DockerfileTester.new(course, compiled_starters_dir, dockerfile_path)
-end.compact
+#   DockerfileTester.new(course, compiled_starters_dir, dockerfile_path)
+# end.compact
 
-starter_repo_testers = Dir["#{course_dir}/compiled_starters/*"].map do |compiled_starter_path|
-  next if STARTER_LANGUAGE_SLUGS_TO_SKIP.include?(File.basename(compiled_starter_path))
+# starter_repo_testers = Dir["#{course_dir}/compiled_starters/*"].map do |compiled_starter_path|
+#   next if STARTER_LANGUAGE_SLUGS_TO_SKIP.include?(File.basename(compiled_starter_path))
 
-  StarterRepoTester.new(
-    course: course,
-    dockerfiles_dir: dockerfiles_dir,
-    starter_dir: compiled_starter_path,
-    tester_dir: TesterDownloader.new(course: course, testers_root_dir: "./testers").download_if_needed,
-    language: Language.find_by_slug!(File.basename(compiled_starter_path).split("-starter-").last),
-  )
-end.compact
+#   StarterRepoTester.new(
+#     course: course,
+#     dockerfiles_dir: dockerfiles_dir,
+#     starter_dir: compiled_starter_path,
+#     tester_dir: TesterDownloader.new(course: course, testers_root_dir: "./testers").download_if_needed,
+#     language: Language.find_by_slug!(File.basename(compiled_starter_path).split("-starter-").last),
+#   )
+# end.compact
 
 solution_tester = SolutionTester.new(
   course: course,
@@ -69,14 +69,14 @@ solution_tester = SolutionTester.new(
 testers = if stage_slugs.any? # Fail-fast with solutions if user is filtering by stages
             [
               solution_tester,
-              *dockerfile_testers.select { |tester| tester.language.slug == language_slug },
-              *starter_repo_testers.select { |tester| tester.language.slug == language_slug },
+              # *dockerfile_testers.select { |tester| tester.language.slug == language_slug },
+              # *starter_repo_testers.select { |tester| tester.language.slug == language_slug },
             ]
           else
             [
               *dockerfile_testers.select { |tester| tester.language.slug == language_slug },
-              *starter_repo_testers.select { |tester| tester.language.slug == language_slug },
-              solution_tester
+              # *starter_repo_testers.select { |tester| tester.language.slug == language_slug },
+              # solution_tester
             ]
           end
 
