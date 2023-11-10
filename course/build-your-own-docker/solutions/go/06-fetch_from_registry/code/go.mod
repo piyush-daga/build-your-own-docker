@@ -1,6 +1,6 @@
 module docker
 
-go 1.21
+go 1.23
 
 require github.com/otiai10/copy v1.14.0
 
